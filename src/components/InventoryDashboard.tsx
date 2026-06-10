@@ -75,19 +75,28 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({ inventor
         
         {/* Operational Analytics Row */}
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="bg-slate-900 rounded-xl p-3 border border-slate-800 border-l-2 border-l-[#2EC5FF] flex flex-col justify-between shadow-inner">
+          <div 
+            onClick={() => setStatusFilter('All')}
+            className={`bg-slate-900 rounded-xl p-3 border border-slate-800 border-l-2 border-l-[#2EC5FF] flex flex-col justify-between shadow-inner cursor-pointer hover:scale-105 hover:border-[#2EC5FF] transition-all ${statusFilter === 'All' ? 'ring-2 ring-[#2EC5FF]/50 scale-105' : ''}`}
+          >
             <p className="text-[9px] font-black uppercase tracking-widest text-[#2EC5FF] opacity-90 mb-1 flex items-center gap-1">
               <Package className="w-3 h-3" /> Total
             </p>
             <div className="text-2xl font-black text-white tracking-tighter leading-none">{summaryCounts.total}</div>
           </div>
-          <div className="bg-slate-900 rounded-xl p-3 border border-slate-800 border-l-2 border-l-rose-500 flex flex-col justify-between shadow-inner">
+          <div 
+            onClick={() => setStatusFilter('Repair')}
+            className={`bg-slate-900 rounded-xl p-3 border border-slate-800 border-l-2 border-l-rose-500 flex flex-col justify-between shadow-inner cursor-pointer hover:scale-105 hover:border-rose-500 transition-all ${statusFilter === 'Repair' ? 'ring-2 ring-rose-500/50 scale-105 border-rose-500' : ''}`}
+          >
             <p className="text-[9px] font-black uppercase tracking-widest text-rose-500 opacity-90 mb-1 flex items-center gap-1">
               <Wrench className="w-3 h-3" /> Repair
             </p>
             <div className="text-2xl font-black text-white tracking-tighter leading-none">{summaryCounts.repair}</div>
           </div>
-          <div className="bg-slate-900 rounded-xl p-3 border border-slate-800 border-l-2 border-l-slate-400 flex flex-col justify-between shadow-inner">
+          <div 
+            onClick={() => setStatusFilter('Scrapped')}
+            className={`bg-slate-900 rounded-xl p-3 border border-slate-800 border-l-2 border-l-slate-400 flex flex-col justify-between shadow-inner cursor-pointer hover:scale-105 hover:border-slate-400 transition-all ${statusFilter === 'Scrapped' ? 'ring-2 ring-slate-400/50 scale-105 border-slate-400' : ''}`}
+          >
             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 opacity-90 mb-1 flex items-center gap-1">
               <Trash2 className="w-3 h-3" /> Scrapped
             </p>
