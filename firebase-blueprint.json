@@ -1,0 +1,50 @@
+{
+  "entities": {
+    "Die": {
+      "title": "Die",
+      "description": "An individual physical die with a unique serial number.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "The unique ID of the die (BaseID-Serial)." },
+        "baseId": { "type": "string", "description": "The base ID of the die." },
+        "serialNumber": { "type": "string", "description": "The serial number of the die (e.g., S1, S2)." },
+        "machineNumber": { "type": "string" },
+        "station": { "type": "string" },
+        "stackPosition": { "type": "string", "enum": ["A", "B", "C"] },
+        "diameter": { "type": "string" },
+        "status": { "type": "string", "enum": ["Green", "Red"] },
+        "returnETA": { "type": "string" },
+        "sentDate": { "type": "string" },
+        "vendor": { "type": "string" },
+        "repairNotes": { "type": "string" },
+        "lastUpdated": { "type": "object" }
+      },
+      "required": ["id", "baseId", "serialNumber", "machineNumber", "station", "stackPosition", "diameter", "status"]
+    },
+    "DieHistory": {
+      "title": "DieHistory",
+      "description": "A log entry for a die's maintenance history.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "dieId": { "type": "string" },
+        "date": { "type": "string" },
+        "action": { "type": "string" },
+        "notes": { "type": "string" },
+        "user": { "type": "string" },
+        "paperworkUrl": { "type": "string" }
+      },
+      "required": ["id", "dieId", "date", "action", "notes", "user"]
+    }
+  },
+  "firestore": {
+    "/dies/{dieId}": {
+      "schema": "Die",
+      "description": "Collection of individual physical dies."
+    },
+    "/history/{historyId}": {
+      "schema": "DieHistory",
+      "description": "Collection of maintenance history logs."
+    }
+  }
+}

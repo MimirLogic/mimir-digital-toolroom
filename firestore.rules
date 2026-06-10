@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: dies
+    // Document ID: [BaseID]-[Serial]
+    // Fields:
+    //   - id: string (required)
+    //   - baseId: string (required)
+    //   - serialNumber: string (required)
+    //   - machineNumber: string (required)
+    //   - station: string (required)
+    //   - stackPosition: string (required, A|B|C)
+    //   - diameter: string (required)
+    //   - status: string (required, Green|Red)
+    //   - returnETA: string (optional)
+    //   - sentDate: string (optional)
+    //   - vendor: string (optional)
+    //   - repairNotes: string (optional)
+    //   - lastUpdated: timestamp (optional)
+    //
+    // Collection: history
+    // Document ID: auto-generated
+    // Fields:
+    //   - id: string (required)
+    //   - dieId: string (required)
+    //   - date: string (required)
+    //   - action: string (required)
+    //   - notes: string (required)
+    //   - user: string (required)
+    //   - paperworkUrl: string (optional)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "bjg2495@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidDie(data) {
+      return data.keys().hasAll(['id', 'baseId', 'serialNumber', 'machineNumber', 'station', 'stackPosition', 'diameter', 'status']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() < 100 &&
+             data.baseId is string && data.baseId.size() > 0 && data.baseId.size() < 100 &&
+             data.serialNumber is string && data.serialNumber.size() > 0 && data.serialNumber.size() < 20 &&
+             data.machineNumber is string && data.machineNumber.size() > 0 && data.machineNumber.size() < 50 &&
+             data.station is string && data.station.size() > 0 && data.station.size() < 50 &&
+             data.stackPosition in ['A', 'B', 'C'] &&
+             data.diameter is string && data.diameter.size() > 0 && data.diameter.size() < 50 &&
+             data.status in ['Green', 'Red'];
+    }
+
+    function isValidHistory(data) {
+      return data.keys().hasAll(['id', 'dieId', 'date', 'action', 'notes', 'user']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() < 100 &&
+             data.dieId is string && data.dieId.size() > 0 && data.dieId.size() < 100 &&
+             data.date is string && data.date.size() > 0 && data.date.size() < 50 &&
+             data.action is string && data.action.size() > 0 && data.action.size() < 100 &&
+             data.notes is string && data.notes.size() >= 0 && data.notes.size() < 2000 &&
+             data.user is string && data.user.size() > 0 && data.user.size() < 100;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /dies/{dieId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidDie(request.resource.data);
+      allow update: if isAuthenticated() && isValidDie(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /history/{historyId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidHistory(request.resource.data);
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow write: if isAdmin();
+    }
+  }
+}
