@@ -17,3 +17,4 @@ Built to eliminate the lean wastes of excess motion and waiting, this tool bridg
 
 ## 🚀 Live Demo
 [View the Live Application Here](https://mimir-digital-toolroom.netlify.app)
+https://mimir-logic-portfolio.netlify.app/
